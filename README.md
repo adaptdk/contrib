@@ -22,6 +22,10 @@ I both cases please at-mention Marco.
 The YAML file tries to be self-explanatory, when in doubt just ask on slack.
 It tries to describe contributions thinking in possible future use of the data.
 
+You may want to [install
+yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html), and then
+enable the git pre-commit hook, e.g. with `git config core.hooksPath .githooks`.
+
 ## References
 
 - [Community Health Analytics Open Source Software, CHAOSS](https://chaoss.community/)
