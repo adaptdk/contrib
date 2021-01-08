@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Runs YAML linter before commit.
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	AGAINST=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	AGAINST=$(git hash-object -t tree /dev/null)
+fi
+
+FILES_TO_CHECK=$(git diff --cached --name-only --diff-filter=AM **.yml)
+
+if [ -z "$FILES_TO_CHECK" ]
+then
+    # Nothing to do.
+    exit 0
+fi
+
+exec yamllint $FILES_TO_CHECK
