@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Open Source Contributions by {{ organization.name }}</title>
+  <meta charset="utf-8">
+</head>
+<body>
+{% block preamble %}
+    <h1>Open Source Contributions by {{ organization.name }}</h1>
+{% endblock %}
+
+{% block contribution_items %}
+    <section class="contributions">
+{% for contribution in contributions %}
+    {% set links_group %}
+        {% if contribution.links %}
+            See
+            {% for i, link in contribution.links %}
+                [<a href="{{ link }}">{{ i + 1 }}</a>]
+            {% endfor %}
+            .
+        {% endif %}
+    {% endset %}
+        <article>
+            <h2>{{ contribution.title }}</h2>
+            <p>{{ types[contribution.type] }}</p>
+            <p>{{ contribution.description }}</p>
+            <p>Around {{ contribution.start|date('F jS, Y') }} by {{ people[contribution.who] }} for <a href="{{ projects[contribution.project].url }}">{{ projects[contribution.project].name }}</a>. {{ links_group|spaceless }}</p>
+        </article>
+{% endfor %}
+    </section>
+{% endblock %}
+
+{% block side %}
+    <aside>
+        <p>Find more about <a href="{{ organization.url }}">{{ organization.name }}</a>.</p>
+{% endblock %}
+
+</body>
+</html>
