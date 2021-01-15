@@ -67,4 +67,34 @@ class GenerateCommand extends Command {
         $output->write($twig->render($template_name, $variables));
     }
 
+    /**
+     * Helper to get a value from contributions nested array dynamically.
+     *
+     * @param string $address
+     *   List of keys separated by periods.
+     *   E.g. 'organization.name' will extract
+     *   $this->contributions['organization']['name'].
+     * @param array $item
+     *   The array to walk. Default to contributions data member.
+     *
+     * @return mixed
+     *   The requested value, or an empty string if not found.
+     */
+    protected function get(string $address, array $item = NULL) {
+        if (empty($address)) {
+            return '';
+        }
+        if (is_null($item)) {
+            $item = $this->contributions;
+        }
+        $parts = explode('.', $address);
+        foreach ($parts as $part) {
+            if (empty($item[$part])) {
+                return '';
+            }
+            $item = $item[$part];
+        }
+        return $item;
+    }
+
 }
