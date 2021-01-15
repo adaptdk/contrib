@@ -10,6 +10,11 @@
         }
     ],
     "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+          "Contributions\\": "src"
+        }
+    },
     "require": {
         "symfony/yaml": "^5.2",
         "symfony/console": "^5.2",
