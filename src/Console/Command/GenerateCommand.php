@@ -45,7 +45,7 @@ class GenerateCommand extends Command {
             throw new \InvalidArgumentException(sprintf('contributions-yml file "%s" does not exists', $yml_file));
         }
         $this->contributions = Yaml::parseFile($yml_file);
-        $this->twigRender($output, 'contributions.html.twig', $this->contributions);
+        $this->twigRender($output, 'contributions.html.twig', $this->prepareVariables());
         return Command::SUCCESS;
     }
 
@@ -95,6 +95,17 @@ class GenerateCommand extends Command {
             $item = $item[$part];
         }
         return $item;
+    }
+
+    /**
+     * Prepared parsed YAML array as variables for twig.
+     *
+     * @return array
+     *   Variables to pass to twig render.
+     */
+    protected function prepareVariables() {
+        $variables = $this->contributions;
+        return $variables;
     }
 
 }
