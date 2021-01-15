@@ -1,0 +1,14 @@
+{
+    "name": "adaptdk/contributions",
+    "description": "Adapt Open Source Contributions",
+    "type": "project",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Marco Villegas",
+            "email": "marco.villegas@adaptagency.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
