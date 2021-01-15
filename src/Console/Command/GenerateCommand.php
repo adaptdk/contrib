@@ -105,7 +105,52 @@ class GenerateCommand extends Command {
      */
     protected function prepareVariables() {
         $variables = $this->contributions;
+        $variables['jsonld'] = $this->getJsonld();
         return $variables;
+    }
+
+    /**
+     * Builds the JSON-LD structure.
+     *
+     * @return array
+     *   The contributions as JSON-LD structure, not yet serialized.
+     */
+    protected function getJsonld() {
+        $organization = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => $this->get('organization.name'),
+            'url' => $this->get('organization.url'),
+        ];
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => ['ItemList', 'CreativeWork'],
+            'name' => sprintf('Opens Source Contributions by %s', $this->get('organization.name')),
+            'funder' => $organization,
+            'itemListElement' => [],
+        ];
+        foreach ($this->contributions['contributions'] as $contribution) {
+            $project = [
+                '@context' => 'https://schema.org',
+                '@type' => 'SoftwareSourceCode',
+                'name' => $this->get("projects.{$contribution['project']}.name"),
+                'url' => $this->get("projects.{$contribution['project']}.url"),
+            ];
+            $item = [
+                '@context' => 'https://schema.org',
+                '@type' => 'CreativeWork',
+                'name' => $contribution ['title'],
+                'genre' => $this->get("types.{$contribution['type']}"),
+                'contributor' => $this->get("people.{$contribution['who']}"),
+                'datePublished' => date('Y-m-d', $contribution['start']),
+                'description' => $contribution['description'],
+                'url' => $this->get('links.0', $contribution),
+                'isBasedOn' => $project,
+            ];
+            $data['itemListElement'][] = $item;
+        }
+        $data['numberOfItems'] = count($data['itemListElement']);
+        return $data;
     }
 
 }

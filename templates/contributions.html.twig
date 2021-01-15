@@ -36,5 +36,10 @@
         <p>Find more about <a href="{{ organization.url }}">{{ organization.name }}</a>.</p>
 {% endblock %}
 
+{% block jsonld %}
+  <script type="application/ld+json">
+  {{ jsonld|json_encode|raw }}
+  </script>
+{% endblock %}
 </body>
 </html>
