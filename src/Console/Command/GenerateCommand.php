@@ -106,6 +106,7 @@ class GenerateCommand extends Command {
     protected function prepareVariables() {
         $variables = $this->contributions;
         $variables['jsonld'] = $this->getJsonld();
+        $variables['generation'] = time();
         return $variables;
     }
 

@@ -34,6 +34,7 @@
 {% block side %}
     <aside>
         <p>Find more about <a href="{{ organization.url }}">{{ organization.name }}</a>.</p>
+        <p>Generated on {{ generation|date }}</p>
 {% endblock %}
 
 {% block jsonld %}
