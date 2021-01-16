@@ -1,40 +1,44 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
-  <title>Open Source Contributions by {{ organization.name }}</title>
-  <meta charset="utf-8">
+    <title>Open Source Contributions by {{ organization.name }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 </head>
 <body>
 {% block preamble %}
-    <h1>Open Source Contributions by {{ organization.name }}</h1>
+    <h1 class="text-center">Open Source Contributions by {{ organization.name }}</h1>
 {% endblock %}
 
 {% block contribution_items %}
-    <section class="contributions">
+    <section class="contributions bg-light py-4">
 {% for contribution in contributions %}
     {% set links_group %}
         {% if contribution.links %}
             See
+            <span class="btn-group" role="group" aria-label="Related links">
             {% for i, link in contribution.links %}
-                [<a href="{{ link }}">{{ i + 1 }}</a>]
+                <a href="{{ link }}" class="btn btn-outline-primary" role="button">{{ i + 1 }}</a>
             {% endfor %}
+            </span>
             .
         {% endif %}
     {% endset %}
-        <article>
-            <h2>{{ contribution.title }}</h2>
-            <p>{{ types[contribution.type] }}</p>
+        <article class="container">
+            <h2>{{ contribution.title }} <sup class="badge fs-6 rounded-pill bg-secondary">{{ types[contribution.type] }}</sup></h2>
             <p>{{ contribution.description }}</p>
-            <p>Around {{ contribution.start|date('F jS, Y') }} by {{ people[contribution.who] }} for <a href="{{ projects[contribution.project].url }}">{{ projects[contribution.project].name }}</a>. {{ links_group|spaceless }}</p>
+            <p>{{ contribution.start|date('F jS, Y') }} by <em>{{ people[contribution.who] }}</em> for <a href="{{ projects[contribution.project].url }}" class="btn btn-outline-secondary" role="button">{{ projects[contribution.project].name }}</a>. {{ links_group|spaceless }}</p>
         </article>
 {% endfor %}
     </section>
 {% endblock %}
 
-{% block side %}
-    <aside>
-        <p>Find more about <a href="{{ organization.url }}">{{ organization.name }}</a>.</p>
-        <p>Generated on {{ generation|date }}</p>
+{% block footer %}
+    <footer class="container mt-4">
+        <p>Find more about <a href="{{ organization.url }}" class="btn btn-primary" role="button">{{ organization.name }}</a>.</p>
+        <p class="text-secondary">Generated on {{ generation|date }}</p>
+    </footer>
 {% endblock %}
 
 {% block jsonld %}
@@ -42,5 +46,6 @@
   {{ jsonld|json_encode|raw }}
   </script>
 {% endblock %}
+
 </body>
 </html>
