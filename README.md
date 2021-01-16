@@ -8,6 +8,18 @@ This is not the complete list of contributions that Adapt has done, but a useful
 set that can be used.
 For now it contains information mainly starting at 2021.
 
+## Producing an HTML
+
+First, make sure you installed dependencies, e.g. `composer install`.
+
+There is some scripting in place to generate an `HTML` page based on the data.
+It also contains `JSON-LD` output that may be useful if the page is public at
+some point.
+
+You may want to try the following command.
+
+    php helper.php generate:html contributions.yml > contributions.html
+
 ## How to add entries
 
 Feel free to post new additions:
