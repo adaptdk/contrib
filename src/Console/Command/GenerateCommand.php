@@ -130,7 +130,7 @@ class GenerateCommand extends Command {
             'funder' => $organization,
             'itemListElement' => [],
         ];
-        foreach ($this->contributions['contributions'] as $contribution) {
+        foreach ($this->contributions['contributions'] as $position => $contribution) {
             $project = [
                 '@context' => 'https://schema.org',
                 '@type' => 'SoftwareSourceCode',
@@ -147,6 +147,7 @@ class GenerateCommand extends Command {
                 'description' => $contribution['description'],
                 'url' => $this->get('links.0', $contribution),
                 'isBasedOn' => $project,
+                'position' => $position,
             ];
             $data['itemListElement'][] = $item;
         }
