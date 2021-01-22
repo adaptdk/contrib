@@ -24,7 +24,7 @@ You may want to try the following command.
 
 Feel free to post new additions:
 
-- Add a new PR, or
+- Use the helper, e.g. `php helper.php contributions:add contributions.yml`, and post a new PR, or
 - Send some lines/links at slack #contributions channel.
 
 I both cases please at-mention Marco.
