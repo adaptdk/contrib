@@ -34,6 +34,11 @@ I both cases please at-mention Marco.
 The YAML file tries to be self-explanatory, when in doubt just ask on slack.
 It tries to describe contributions thinking in possible future use of the data.
 
+Types are [CHAOSS Types of
+Contributions](https://github.com/chaoss/wg-common/blob/master/focus-areas/what/types-of-contributions.md).
+
+Contributions are sorted by date.
+
 You may want to [install
 yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html), and then
 enable the git pre-commit hook, e.g. with `git config core.hooksPath .githooks`.
