@@ -8,7 +8,9 @@ require_once 'vendor/autoload.php';
 
 use Contributions\Console\Command\GenerateCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Yaml\Command\LintCommand;
 
 $console = new Application();
+$console->add(new LintCommand);
 $console->add(new GenerateCommand);
 $console->run();
