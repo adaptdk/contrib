@@ -39,9 +39,8 @@ Contributions](https://github.com/chaoss/wg-common/blob/master/focus-areas/what/
 
 Contributions are sorted by date.
 
-You may want to [install
-yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html), and then
-enable the git pre-commit hook, e.g. with `git config core.hooksPath .githooks`.
+You may want to enable the git pre-commit hook, e.g. with
+`git config core.hooksPath .githooks`.
 
 ## References
 
