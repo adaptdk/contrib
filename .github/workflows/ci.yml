@@ -25,3 +25,6 @@ jobs:
         name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
+      -
+        name: Lint contributions YAML
+        run: php helper.php lint:yaml contributions.yml
