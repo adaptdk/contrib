@@ -28,7 +28,7 @@ class GenerateCommand extends Command {
      */
     protected function configure() {
         $this
-            ->setName('generate:html')
+            ->setName('html')
             ->setDescription('Generates HTML5 output')
             ->addArgument(
                 'contributions-yml',

@@ -8,8 +8,8 @@ require_once 'vendor/autoload.php';
 
 use Contributions\Console\Command\AddCommand;
 use Contributions\Console\Command\GenerateCommand;
+use Contributions\Console\Command\LintCommand;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Yaml\Command\LintCommand;
 
 $console = new Application();
 $console->add(new AddCommand);

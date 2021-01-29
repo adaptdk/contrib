@@ -41,7 +41,7 @@ class AddCommand extends Command {
      */
     protected function configure() {
         $this
-            ->setName('contributions:add')
+            ->setName('add')
             ->setDescription('Add a new contributions entry to the YAML file')
             ->addArgument(
                 'contributions-yml',
