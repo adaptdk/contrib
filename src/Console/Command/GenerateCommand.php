@@ -42,6 +42,13 @@ class GenerateCommand extends Command {
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                 'A project tag to filter the output.',
                 []
+            )
+            ->addOption(
+                'type',
+                null,
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+                'A contribution type to filter the output.',
+                []
             );
     }
 
@@ -55,6 +62,7 @@ class GenerateCommand extends Command {
         }
         $this->contributions = Yaml::parseFile($yml_file);
         $this->filterByTags($input->getOption('tag'));
+        $this->filterByTypes($input->getOption('type'));
         $this->twigRender($output, 'contributions.html.twig', $this->prepareVariables());
         return Command::SUCCESS;
     }
@@ -177,10 +185,31 @@ class GenerateCommand extends Command {
             return;
         }
         // Filter the contributions set.
-        $contributions = array_filter($this->contributions['contributions'], function ($contribution) use ($project_tags) {
+        $this->contributions['contributions'] = array_filter($this->contributions['contributions'], function ($contribution) use ($project_tags) {
             $current_project_tags = $this->get("projects.{$contribution['project']}.tags");
             return !empty(array_intersect($current_project_tags, $project_tags));
         });
-        $this->contributions['contributions'] = $contributions;
     }
+
+    /**
+     * Filter contributions based on contribution types.
+     *
+     * @param string[] $types
+     *   List of contribution types to filter by.
+     */
+    protected function filterByTypes(array $types) {
+        if (empty($types)) {
+            // Nothing to filter.
+            return;
+        }
+        // Filter the contributions set.
+        $this->contributions['contributions'] = array_filter($this->contributions['contributions'], function ($contribution) use ($types) {
+            if (empty($contribution['type'])) {
+                // No value set, skip.
+                return false;
+            }
+            return in_array($contribution['type'], $types);
+        });
+    }
+
 }
