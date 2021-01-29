@@ -31,8 +31,9 @@ class GenerateCommand extends Command {
             ->setDescription('Generates HTML5 output')
             ->addArgument(
                 'contributions-yml',
-                InputArgument::REQUIRED,
-                'YAML file with the data to process.'
+                InputArgument::OPTIONAL,
+                'YAML file with the data to process.',
+                'contributions.yml'
             );
     }
 

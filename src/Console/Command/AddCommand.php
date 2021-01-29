@@ -45,8 +45,9 @@ class AddCommand extends Command {
             ->setDescription('Add a new contributions entry to the YAML file')
             ->addArgument(
                 'contributions-yml',
-                InputArgument::REQUIRED,
-                'YAML file to use as input if exists, and that will be edited or generated.'
+                InputArgument::OPTIONAL,
+                'YAML file to use as input if exists, and that will be edited or generated.',
+                'contributions.yml'
             );
     }
 
