@@ -110,9 +110,15 @@ class AddCommand extends Command {
             $question = new Question('What is the main URL of the project? (E.g. https://www.drupal.org/project/migrate_plus): ');
             $question->setValidator([self::class, 'isNotEmpty']);
             $url = $helper->ask($input, $output, $question);
+            $question = new Question("Please provide tags for the project, e.g. drupal (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
+            $question->setMultiline(true);
+            $question->setValidator([self::class, 'isNotEmpty']);
+            $question->setNormalizer([self::class, 'cleanEmpty']);
+            $tags = $helper->ask($input, $output, $question);
             $this->contributions['projects'][$machine_name] = [
                 'name' => $name,
                 'url' => $url,
+                'tags' => $tags,
             ];
             $project = $machine_name;
         }

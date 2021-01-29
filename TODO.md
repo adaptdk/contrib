@@ -1,3 +1,3 @@
 # Ideas
 
-- Support project tags on CLI input helper.
+- Add command to re-format YAML.
