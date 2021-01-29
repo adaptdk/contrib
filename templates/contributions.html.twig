@@ -28,6 +28,9 @@
         <article class="container">
             <h2>{{ contribution.title }}</sup></h2>
             <span class="badge bg-dark">{{ types[contribution.type] }}</span>
+            {% for tag in projects[contribution.project].tags %}
+                <span class="badge bg-dark">{{ tag }}</span>
+            {% endfor %}
             <p>{{ contribution.description }}</p>
             <p>{{ contribution.start|date('F jS, Y') }} by <em>{{ people[contribution.who] }}</em> for <a href="{{ projects[contribution.project].url }}" class="btn btn-outline-secondary" role="button">{{ projects[contribution.project].name }}</a>. {{ links_group|spaceless }}</p>
         </article>
