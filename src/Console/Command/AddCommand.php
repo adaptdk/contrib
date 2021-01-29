@@ -162,12 +162,7 @@ class AddCommand extends Command {
         $question = new Question("[7/7] Please provide public links related to the contribution? (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
         $question->setMultiline(true);
         $question->setValidator([self::class, 'isNotEmpty']);
-        $question->setNormalizer(function ($value) {
-            $links = explode(PHP_EOL, $value);
-            array_walk($links, 'trim');
-            $links = array_filter($links);
-            return $links;
-        });
+        $question->setNormalizer([self::class, 'cleanEmpty']);
         $contribution['links'] = $helper->ask($input, $output, $question);
         return $contribution;
     }
@@ -233,6 +228,16 @@ class AddCommand extends Command {
             throw new \RuntimeException('Please provide a non-empty value.');
         }
         return $value;
+    }
+
+    /**
+     * Normalizer helper to filter out empty lines.
+     */
+    public static function cleanEmpty($value) {
+        $lines = explode(PHP_EOL, $value);
+        array_walk($lines, 'trim');
+        $lines = array_filter($lines);
+        return $lines;
     }
 
 }
