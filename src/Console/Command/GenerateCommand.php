@@ -5,6 +5,7 @@ namespace Contributions\Console\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
@@ -34,6 +35,13 @@ class GenerateCommand extends Command {
                 InputArgument::OPTIONAL,
                 'YAML file with the data to process.',
                 'contributions.yml'
+            )
+            ->addOption(
+                'tag',
+                null,
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+                'A project tag to filter the output.',
+                []
             );
     }
 
@@ -46,6 +54,7 @@ class GenerateCommand extends Command {
             throw new \InvalidArgumentException(sprintf('contributions-yml file "%s" does not exists', $yml_file));
         }
         $this->contributions = Yaml::parseFile($yml_file);
+        $this->filterByTags($input->getOption('tag'));
         $this->twigRender($output, 'contributions.html.twig', $this->prepareVariables());
         return Command::SUCCESS;
     }
@@ -156,4 +165,22 @@ class GenerateCommand extends Command {
         return $data;
     }
 
+    /**
+     * Filter contributions based on project tags.
+     *
+     * @param string[] $project_tags
+     *   List of project tags to filter by.
+     */
+    protected function filterByTags(array $project_tags) {
+        if (empty($project_tags)) {
+            // Nothing to filter.
+            return;
+        }
+        // Filter the contributions set.
+        $contributions = array_filter($this->contributions['contributions'], function ($contribution) use ($project_tags) {
+            $current_project_tags = $this->get("projects.{$contribution['project']}.tags");
+            return !empty(array_intersect($current_project_tags, $project_tags));
+        });
+        $this->contributions['contributions'] = $contributions;
+    }
 }
