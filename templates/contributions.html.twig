@@ -45,7 +45,7 @@
     <footer class="container mt-4">
         <p class="lead">{{ organization.about }}</p>
         <p>Find more about <a href="{{ organization.url }}" class="btn btn-primary" role="button">{{ organization.name }}</a>.</p>
-        <p class="text-secondary">Generated on {{ generation|date }}</p>
+        <p class="text-secondary">Generated on {{ generation|date('F j, Y H:i O') }}</p>
     </footer>
 {% endblock %}
 
