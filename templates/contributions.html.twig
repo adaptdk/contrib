@@ -8,7 +8,10 @@
 </head>
 <body>
 {% block preamble %}
-    <h1 class="text-center">Open Source Contributions by {{ organization.name }}</h1>
+    <header class="container p-5">
+        <h1 class="text-center">Open Source Contributions by {{ organization.name }}</h1>
+        <p class="lead text-muted">{{ organization.introduction }}</p>
+    </header>
 {% endblock %}
 
 {% block contribution_items %}
@@ -40,6 +43,7 @@
 
 {% block footer %}
     <footer class="container mt-4">
+        <p class="lead">{{ organization.about }}</p>
         <p>Find more about <a href="{{ organization.url }}" class="btn btn-primary" role="button">{{ organization.name }}</a>.</p>
         <p class="text-secondary">Generated on {{ generation|date }}</p>
     </footer>
