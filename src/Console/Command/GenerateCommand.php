@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -15,6 +14,8 @@ use Twig\Loader\FilesystemLoader;
  * Report command.
  */
 class GenerateCommand extends Command {
+
+    use YamlTrait;
 
     /**
      * Parsed YAML structure.
@@ -57,10 +58,7 @@ class GenerateCommand extends Command {
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
         $yml_file = $input->getArgument('contributions-yml');
-        if (!file_exists($yml_file)) {
-            throw new \InvalidArgumentException(sprintf('contributions-yml file "%s" does not exists', $yml_file));
-        }
-        $this->contributions = Yaml::parseFile($yml_file);
+        $this->fillContributions($yml_file);
         $this->filterByTags($input->getOption('tag'));
         $this->filterByTypes($input->getOption('type'));
         $this->twigRender($output, 'contributions.html.twig', $this->prepareVariables());
@@ -161,7 +159,7 @@ class GenerateCommand extends Command {
                 'name' => $contribution ['title'],
                 'genre' => $this->get("types.{$contribution['type']}"),
                 'contributor' => $this->get("people.{$contribution['who']}"),
-                'datePublished' => date('Y-m-d', $contribution['start']),
+                'datePublished' => $contribution['start']->format('Y-m-d'),
                 'description' => $contribution['description'],
                 'url' => $this->get('links.0', $contribution),
                 'isBasedOn' => $project,
