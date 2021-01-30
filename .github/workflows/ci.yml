@@ -28,3 +28,6 @@ jobs:
       -
         name: Lint contributions YAML
         run: php helper.php lint
+      -
+        name: Format YAML an verify no changes are added
+        run: php helper.php format && git diff --exit-code
