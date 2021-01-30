@@ -8,12 +8,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Add command.
  */
 class AddCommand extends Command {
+
+    use YamlTrait;
 
     /**
      * Label for undefined person.
@@ -28,13 +29,6 @@ class AddCommand extends Command {
      * @var string
      */
     const UNDEFINED_PROJECT = 'New project';
-
-    /**
-     * Parsed YAML structure.
-     *
-     * @var array
-     */
-    protected $contributions;
 
     /**
      * {@inheritdoc}
@@ -56,24 +50,11 @@ class AddCommand extends Command {
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
         $yml_file = $input->getArgument('contributions-yml');
-        if (!file_exists($yml_file)) {
-            // TODO No initial YAML structure.
-            throw new \InvalidArgumentException('Generating the YAML from scratch is not yet supported, use contributions.yml file as base to create one.');
-        }
-        // The extra flag allows dates to use \Datetime, which is useful when
-        // serializing it back to keep the ISO 8601 format.
-        $this->contributions = Yaml::parseFile($yml_file, Yaml::PARSE_DATETIME);
+        $this->fillContributions($yml_file);
         $project = $this->getProject($input, $output);
         $contribution = $this->getContribution($project, $input, $output);
         $this->contributions['contributions'][] = $contribution;
-        // Finalize and write out.
-        $this->prepareContributions();
-        $yaml = Yaml::dump($this->contributions, 4, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
-        if (file_put_contents($yml_file, $yaml) == FALSE) {
-            $output->writeln(sprintf('The file "%s" could not be updated correctly', $yml_file));
-            return Command::FAILURE;
-        }
-        $output->writeln(sprintf('The file "%s" was updated correctly', $yml_file));
+        $this->writeYaml($yml_file, $output);
         return Command::SUCCESS;
     }
 
