@@ -18,13 +18,13 @@ some point.
 
 You may want to try the following command.
 
-    php helper.php html > contributions.html
+    contriblog html > contributions.html
 
 ## How to add entries
 
 Feel free to post new additions:
 
-- Use the helper, e.g. `php helper.php add`, and post a new PR, or
+- Use the helper, e.g. `contriblog add`, and post a new PR, or
 - Send some lines/links at slack #contributions channel.
 
 I both cases please at-mention Marco.

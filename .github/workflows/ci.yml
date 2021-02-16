@@ -27,13 +27,13 @@ jobs:
         run: composer install --prefer-dist --no-progress
       -
         name: Lint contributions YAML
-        run: php helper.php lint
+        run: vendor/bin/contriblog lint
       -
         name: Format YAML an verify no changes are added
-        run: php helper.php format && git diff --exit-code
+        run: vendor/bin/contriblog format && git diff --exit-code
       -
         name: Produce an HTML export
-        run: php helper.php html > contributions.html
+        run: vendor/bin/contriblog html > contributions.html
       -
         name: Archive the an HTML export
         uses: actions/upload-artifact@v2
