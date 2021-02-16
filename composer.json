@@ -1,6 +1,6 @@
 {
-    "name": "adaptdk/contributions",
-    "description": "Adapt Open Source Contributions",
+    "name": "adaptdk/contrib",
+    "description": "Open Source Contributions Log",
     "type": "project",
     "license": "GPL-3.0-or-later",
     "authors": [
@@ -17,8 +17,8 @@
         }
     },
     "require": {
-        "symfony/yaml": "^5.2",
         "symfony/console": "^5.2",
+        "symfony/yaml": "^5.2",
         "twig/twig": "^3.2"
     }
 }
