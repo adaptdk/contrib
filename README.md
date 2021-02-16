@@ -1,12 +1,8 @@
-# Open Source contributions
+# Open Source Contributions Log
 
 This project tries to gather information about
-[open source](https://opensource.org/osd) contributions made by
-[Adapt](https://adaptagency.com/).
-
-This is not the complete list of contributions that Adapt has done, but a useful
-set that can be used.
-For now it contains information mainly starting at 2021.
+[open source](https://opensource.org/osd) contributions for a given
+organization.
 
 ## Producing an HTML
 
@@ -49,3 +45,7 @@ You may want to enable the git pre-commit hook, e.g. with
   also provides general guidance, that this project can use.
 - [CHAOSS Common Metrics Working Group (Common WG)](https://github.com/chaoss/wg-common)
   contains more direct suggestions.
+
+## Credit
+
+This project has been initially developed by [Adapt](https://adaptagency.com/).
