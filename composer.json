@@ -9,6 +9,7 @@
             "email": "marco.villegas@adaptagency.com"
         }
     ],
+    "bin": ["contriblog"],
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
