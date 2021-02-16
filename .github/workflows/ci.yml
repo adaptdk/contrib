@@ -26,17 +26,5 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
       -
-        name: Lint contributions YAML
-        run: vendor/bin/contriblog lint
-      -
-        name: Format YAML an verify no changes are added
-        run: vendor/bin/contriblog format && git diff --exit-code
-      -
-        name: Produce an HTML export
-        run: vendor/bin/contriblog html > contributions.html
-      -
-        name: Archive the an HTML export
-        uses: actions/upload-artifact@v2
-        with:
-          name: contributions-html
-          path: contributions.html
+        name: Main script does not fail to start
+        run: contriblog --help
