@@ -27,4 +27,4 @@ jobs:
         run: composer install --prefer-dist --no-progress
       -
         name: Main script does not fail to start
-        run: contriblog --help
+        run: ./contriblog --help
