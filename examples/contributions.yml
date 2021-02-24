@@ -1,0 +1,68 @@
+organization:
+    name: 'Acme Inc'
+    url: 'https://example.com/link-to-organization-site'
+    about: |
+        A description about the organization here.
+    introduction: |
+        And introduction text that is intented to appear at the top of the HTML output.
+people:
+    jane: 'Jane Example'
+    joe: 'Joe Examples'
+projects:
+    vendor/project:
+        name: 'Project name'
+        url: 'https://example.com/link-to-project'
+        tags:
+            - group1
+    drupal/migrate_plus:
+        name: 'Migrate Plus'
+        url: 'https://www.drupal.org/project/migrate_plus'
+        tags:
+            - drupal
+types:
+    code: 'Writing Code'
+    code_review: 'Reviewing Code'
+    triage: 'Bug Triaging'
+    qa: 'Quality Assurance and Testing'
+    security: 'Security-Related Activities'
+    localization: 'Localization/L10N and Translation'
+    event: 'Event Organization'
+    documentation: 'Documentation Authorship'
+    community: 'Community Building and Management'
+    teaching: 'Teaching and Tutorial Building'
+    troubleshooting: 'Troubleshooting and Support'
+    creative: 'Creative Work and Design'
+    ux: 'User Interface, User Experience, and Accessibility'
+    social: 'Social Media Management'
+    user-support: 'User Support and Answering Questions'
+    write: 'Writing Articles'
+    public_relations: 'Public Relations - Interviews with Technical Press'
+    speak: 'Speaking at Events'
+    marketing: 'Marketing and Campaign Advocacy'
+    website: 'Website Development'
+    legal: 'Legal Council'
+    financial: 'Financial Management'
+contributions:
+    -
+        project: vendor/project
+        title: 'Implement new feature at project!'
+        type: code
+        who: jane
+        start: 2020-03-31T00:00:00+00:00
+        description: 'Submitted pull request to make new featury feature'
+        links:
+            - 'https://example.com/link-to-related-issue'
+            - 'https://example.com/link-to-related-pr'
+    -
+        project: drupal/migrate_plus
+        title: 'DOM process plugin to generate files from html'
+        type: code
+        who: joe
+        start: 2020-12-31T00:00:00+00:00
+        description: |
+            Create a new migrate process plugin that can receive a \DOMDocument,
+            e.g. generated with the dom plugin, and given some options produce
+            entities needed.
+        links:
+            - 'https://gitlab.com/drupalspoons/migrate_plus/-/issues/249'
+            - 'https://gitlab.com/drupalspoons/migrate_plus/-/merge_requests/15'
