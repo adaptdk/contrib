@@ -4,7 +4,7 @@ This project tries to gather information about
 [open source](https://opensource.org/osd) contributions for a given
 organization.
 
-## Producing an HTML
+## Producing an HTML file
 
 First, make sure you installed dependencies, e.g. `composer install`.
 
@@ -14,20 +14,17 @@ some point.
 
 You may want to try the following command.
 
-    contriblog html > contributions.html
+    ./contriblog html > contributions.html
 
-## How to add entries
+## Adding entries
 
-Feel free to post new additions:
-
-- Use the helper, e.g. `contriblog add`, and post a new PR, or
-- Send some lines/links at slack #contributions channel.
-
-I both cases please at-mention Marco.
+- Use the helper, e.g. `./contriblog add`, or
+- Manually edit the YAML file, and process it with `./contriblog format` to get
+  it on the standard output.
 
 ## YAML format
 
-The YAML file tries to be self-explanatory, when in doubt just ask on slack.
+The YAML file tries to be self-explanatory.
 It tries to describe contributions thinking in possible future use of the data.
 
 Types are [CHAOSS Types of
