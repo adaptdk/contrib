@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -50,12 +51,52 @@ class AddCommand extends Command {
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
         $yml_file = $input->getArgument('contributions-yml');
-        $this->fillContributions($yml_file);
+        try {
+            $this->fillContributions($yml_file);
+        }
+        catch (\InvalidArgumentException $exception) {
+            // File does not exist yet.
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion(sprintf('The "%s" file does not exist yet. Do you want to generate initialize it? (y/n) ', $yml_file), false);
+            if (!$helper->ask($input, $output, $question)) {
+                // Nothing else to do, cannot continue, hence fail.
+                $output->writeln('<error>A contributions YAML file is needed to continue. See an examples directory or accept to generate it while runnind add command.</error>');
+                return Command::FAILURE;
+            }
+            $this->generateMinimalYaml();
+            $this->getOrganization($input, $output);
+        }
         $project = $this->getProject($input, $output);
         $contribution = $this->getContribution($project, $input, $output);
         $this->contributions['contributions'][] = $contribution;
         $this->writeYaml($yml_file, $output);
         return Command::SUCCESS;
+    }
+
+    /**
+     * Helper to get organization.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   Input object.
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *   Output object.
+     *
+     * @return array
+     *   A map with two keys, name and url, for the organization.
+     */
+    protected function getOrganization(InputInterface $input, OutputInterface $output) {
+        $helper = $this->getHelper('question');
+        $question = new Question('[1/2] What is the name of the organization? ');
+        $question->setValidator([self::class, 'isNotEmpty']);
+        $name = $helper->ask($input, $output, $question);
+        $question = new Question('What is main URL for the organization? ');
+        $question->setValidator([self::class, 'isNotEmpty']);
+        $url = $helper->ask($input, $output, $question);
+        $this->contributions['organization'] = [
+            'name' => $name,
+            'url' => $url,
+        ];
+        return $this->contributions['organization'];
     }
 
     /**
@@ -225,6 +266,15 @@ class AddCommand extends Command {
         array_walk($lines, 'trim');
         $lines = array_filter($lines);
         return $lines;
+    }
+
+    protected function generateMinimalYaml() {
+        $this->contributions = [
+            'organization' => [],
+            'people' => [],
+            'projects' => [],
+            'contributions' => [],
+        ];
     }
 
 }
