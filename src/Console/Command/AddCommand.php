@@ -1,6 +1,6 @@
 <?php
 
-namespace Contributions\Console\Command;
+namespace ContribLog\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

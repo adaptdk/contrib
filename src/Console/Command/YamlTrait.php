@@ -1,6 +1,6 @@
 <?php
 
-namespace Contributions\Console\Command;
+namespace ContribLog\Console\Command;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;

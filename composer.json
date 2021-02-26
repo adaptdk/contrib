@@ -13,7 +13,7 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-          "Contributions\\": "src"
+          "ContribLog\\": "src"
         }
     },
     "require": {
