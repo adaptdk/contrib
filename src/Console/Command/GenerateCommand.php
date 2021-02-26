@@ -134,6 +134,7 @@ class GenerateCommand extends Command {
      */
     protected function prepareVariables() {
         $variables = $this->contributions;
+        $variables['types'] = $this->getContributionTypes();
         $variables['jsonld'] = $this->getJsonld();
         $variables['generation'] = time();
         return $variables;
@@ -170,7 +171,7 @@ class GenerateCommand extends Command {
                 '@context' => 'https://schema.org',
                 '@type' => 'CreativeWork',
                 'name' => $contribution ['title'],
-                'genre' => $this->get("types.{$contribution['type']}"),
+                'genre' => $this->getContributionTypes()[$contribution['type']],
                 'contributor' => $this->get("people.{$contribution['who']}"),
                 'datePublished' => $contribution['start']->format('Y-m-d'),
                 'description' => $contribution['description'],

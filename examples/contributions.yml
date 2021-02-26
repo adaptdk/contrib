@@ -19,29 +19,6 @@ projects:
         url: 'https://www.drupal.org/project/migrate_plus'
         tags:
             - drupal
-types:
-    code: 'Writing Code'
-    code_review: 'Reviewing Code'
-    triage: 'Bug Triaging'
-    qa: 'Quality Assurance and Testing'
-    security: 'Security-Related Activities'
-    localization: 'Localization/L10N and Translation'
-    event: 'Event Organization'
-    documentation: 'Documentation Authorship'
-    community: 'Community Building and Management'
-    teaching: 'Teaching and Tutorial Building'
-    troubleshooting: 'Troubleshooting and Support'
-    creative: 'Creative Work and Design'
-    ux: 'User Interface, User Experience, and Accessibility'
-    social: 'Social Media Management'
-    user-support: 'User Support and Answering Questions'
-    write: 'Writing Articles'
-    public_relations: 'Public Relations - Interviews with Technical Press'
-    speak: 'Speaking at Events'
-    marketing: 'Marketing and Campaign Advocacy'
-    website: 'Website Development'
-    legal: 'Legal Council'
-    financial: 'Financial Management'
 contributions:
     -
         project: vendor/project

@@ -65,4 +65,45 @@ trait YamlTrait {
         });
     }
 
+    /**
+     * Get possible contribution types.
+     *
+     * Based on CHAOSS Types of Contributions.
+     * Currently based on chaoss/wg-common commit
+     * e6c88c6c95cc09de7f685869f3ed277b419b665b.
+     * Latest version available at https://github.com/chaoss/wg-common.
+     *
+     * @see https://github.com/chaoss/wg-common/blob/master/focus-areas/what/types-of-contributions.md
+     *
+     * @return string[]
+     *   A map where keys are machine names to identify the contribution type,
+     *   and values are their labels.
+     */
+    protected function getContributionTypes() {
+        return [
+            'code' =>'Writing Code',
+            'code_review' =>'Reviewing Code',
+            'triage' =>'Bug Triaging',
+            'qa' =>'Quality Assurance and Testing',
+            'security' =>'Security-Related Activities',
+            'localization' =>'Localization/L10N and Translation',
+            'event' =>'Event Organization',
+            'documentation' =>'Documentation Authorship',
+            'community' =>'Community Building and Management',
+            'teaching' =>'Teaching and Tutorial Building',
+            'troubleshooting' =>'Troubleshooting and Support',
+            'creative' =>'Creative Work and Design',
+            'ux' =>'User Interface, User Experience, and Accessibility',
+            'social' =>'Social Media Management',
+            'user-support' =>'User Support and Answering Questions',
+            'write' =>'Writing Articles',
+            'public_relations' =>'Public Relations - Interviews with Technical Press',
+            'speak' =>'Speaking at Events',
+            'marketing' =>'Marketing and Campaign Advocacy',
+            'website' =>'Website Development',
+            'legal' =>'Legal Council',
+            'financial' =>'Financial Management',
+        ];
+    }
+
 }

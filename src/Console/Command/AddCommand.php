@@ -127,7 +127,7 @@ class AddCommand extends Command {
         $contribution['title'] = $helper->ask($input, $output, $question);
         $question = new ChoiceQuestion(
             '[3/7] What was the main type of the contribution? [default: code]',
-            $this->contributions['types'],
+            $this->getContributionTypes(),
             'code'
         );
         $question->setErrorMessage('Type %s is invalid.');
