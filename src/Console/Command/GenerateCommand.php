@@ -87,7 +87,7 @@ class GenerateCommand extends Command {
             }
         }
         if (empty($directory)) {
-            throw \Exception('Cannot find t valid "templates" directory with the needed template.');
+            throw \Exception('Cannot find a valid "templates" directory with the needed template.');
         }
         $loader = new FilesystemLoader($directory);
         $twig = new Environment($loader, [
