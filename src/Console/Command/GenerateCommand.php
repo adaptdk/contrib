@@ -2,6 +2,7 @@
 
 namespace ContribLog\Console\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +14,7 @@ use Twig\Loader\FilesystemLoader;
 /**
  * Report command.
  */
+#[AsCommand(name: 'html', description: 'Generates HTML5 output')]
 class GenerateCommand extends Command {
 
     use YamlTrait;
@@ -29,8 +31,6 @@ class GenerateCommand extends Command {
      */
     protected function configure() {
         $this
-            ->setName('html')
-            ->setDescription('Generates HTML5 output')
             ->addArgument(
                 'contributions-yml',
                 InputArgument::OPTIONAL,

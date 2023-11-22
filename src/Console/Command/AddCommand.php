@@ -2,6 +2,7 @@
 
 namespace ContribLog\Console\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Question\Question;
 /**
  * Add command.
  */
+#[AsCommand(name: 'add', description: 'Add a new contributions entry to the YAML file')]
 class AddCommand extends Command {
 
     use YamlTrait;
@@ -36,8 +38,6 @@ class AddCommand extends Command {
      */
     protected function configure() {
         $this
-            ->setName('add')
-            ->setDescription('Add a new contributions entry to the YAML file')
             ->addArgument(
                 'contributions-yml',
                 InputArgument::OPTIONAL,
