@@ -17,8 +17,8 @@
         }
     },
     "require": {
-        "symfony/console": "^5.2",
-        "symfony/yaml": "^5.2",
+        "symfony/console": "6.3.*",
+        "symfony/yaml": "^6.3",
         "twig/twig": "^3.2"
     }
 }
