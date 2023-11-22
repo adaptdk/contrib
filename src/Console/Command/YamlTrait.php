@@ -70,10 +70,10 @@ trait YamlTrait {
      *
      * Based on CHAOSS Types of Contributions.
      * Currently based on chaoss/wg-common commit
-     * e6c88c6c95cc09de7f685869f3ed277b419b665b.
+     * 58ee6ceacba8bd8603beb41885729dda22dac288.
      * Latest version available at https://github.com/chaoss/wg-common.
      *
-     * @see https://github.com/chaoss/wg-common/blob/master/focus-areas/what/types-of-contributions.md
+     * @see https://github.com/chaoss/wg-common/blob/master/focus-areas/contributions/types-of-contributions.md
      *
      * @return string[]
      *   A map where keys are machine names to identify the contribution type,
