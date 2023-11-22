@@ -29,7 +29,7 @@
         {% endif %}
     {% endset %}
         <article class="container">
-            <h2>{{ contribution.title }}</sup></h2>
+            <h2>{{ contribution.title }}</h2>
             <p class="lead">{{ contribution.description }}</p>
             <span class="badge bg-dark">{{ types[contribution.type] }}</span>
             {% for tag in projects[contribution.project].tags %}
