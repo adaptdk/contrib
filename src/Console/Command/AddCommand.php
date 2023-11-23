@@ -34,6 +34,13 @@ class AddCommand extends Command {
     const UNDEFINED_PROJECT = 'New project';
 
     /**
+     * Key for undefined project.
+     *
+     * @var string
+     */
+    const UNDEFINED_PROJECT_KEY = 'new';
+
+    /**
      * {@inheritdoc}
      */
     protected function configure() {
@@ -112,8 +119,10 @@ class AddCommand extends Command {
      */
     protected function getProject(InputInterface $input, OutputInterface $output) {
         $helper = $this->getHelper('question');
-        $projects = array_keys($this->contributions['projects']);
-        array_unshift($projects, self::UNDEFINED_PROJECT);
+        $projects = [self::UNDEFINED_PROJECT_KEY => self::UNDEFINED_PROJECT];
+        foreach ($this->contributions['projects'] as $project_key => $project) {
+            $projects[$project_key] = $project['name'];
+        }
         $question = new ChoiceQuestion(
             '[1/7] Which project received the contribution?',
             $projects,
@@ -121,7 +130,7 @@ class AddCommand extends Command {
         );
         $question->setErrorMessage('Project %s is invalid.');
         $project = $helper->ask($input, $output, $question);
-        if ($project == self::UNDEFINED_PROJECT) {
+        if ($project == self::UNDEFINED_PROJECT_KEY) {
             $question = new Question('What is the machine name of the project? (E.g. drupal/migrate_plus): ');
             $question->setValidator([self::class, 'isNotEmpty']);
             $machine_name = $helper->ask($input, $output, $question);
