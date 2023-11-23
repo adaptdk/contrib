@@ -120,6 +120,7 @@ class AddCommand extends Command {
     protected function getProject(InputInterface $input, OutputInterface $output) {
         $helper = $this->getHelper('question');
         $projects = [self::UNDEFINED_PROJECT_KEY => self::UNDEFINED_PROJECT];
+        ksort($this->contributions['projects']);
         foreach ($this->contributions['projects'] as $project_key => $project) {
             $projects[$project_key] = $project['name'];
         }
