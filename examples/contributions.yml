@@ -9,16 +9,16 @@ people:
     jane: 'Jane Example'
     joe: 'Joe Examples'
 projects:
-    vendor/project:
-        name: 'Project name'
-        url: 'https://example.com/link-to-project'
-        tags:
-            - group1
     drupal/migrate_plus:
         name: 'Migrate Plus'
         url: 'https://www.drupal.org/project/migrate_plus'
         tags:
             - drupal
+    vendor/project:
+        name: 'Project name'
+        url: 'https://example.com/link-to-project'
+        tags:
+            - group1
 contributions:
     -
         project: vendor/project
