@@ -54,6 +54,8 @@ trait YamlTrait {
      * Helper to adjust contributions data member before dump.
      */
     protected function prepareContributions() {
+        // Sort projects by identifier.
+        ksort($this->contributions['projects']);
         // Sort people by identifier.
         ksort($this->contributions['people']);
         // Sort contributions by start date.
