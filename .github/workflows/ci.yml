@@ -28,3 +28,14 @@ jobs:
       -
         name: Main script does not fail to start
         run: ./contriblog --help
+      -
+        name: Lint runs an example passes linting
+        run: ./contriblog lint examples/contributions.yml
+      -
+        name: Can format and it is a no operation for the example
+        run: |
+          ./contriblog format examples/contributions.yml
+          git diff --exit-code
+      -
+        name: HTML generation runs
+        run: ./contriblog html examples/contributions.yml
