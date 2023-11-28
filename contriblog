@@ -9,13 +9,13 @@ require_once 'vendor/autoload.php';
 
 use ContribLog\Console\Command\AddCommand;
 use ContribLog\Console\Command\FormatCommand;
-use ContribLog\Console\Command\GenerateCommand;
+use ContribLog\Console\Command\HtmlCommand;
 use ContribLog\Console\Command\LintCommand;
 use Symfony\Component\Console\Application;
 
 $console = new Application();
 $console->add(new AddCommand);
 $console->add(new FormatCommand);
-$console->add(new GenerateCommand);
+$console->add(new HtmlCommand);
 $console->add(new LintCommand);
 $console->run();
