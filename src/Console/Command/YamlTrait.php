@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Format command.
+ * YAML related actions.
  */
 trait YamlTrait {
 
