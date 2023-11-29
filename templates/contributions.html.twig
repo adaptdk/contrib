@@ -14,6 +14,11 @@
     <header class="container p-5">
         <h1 class="text-center">Open Source Contributions by {{ organization.name }}</h1>
         <p class="lead text-muted">{{ organization.introduction }}</p>
+{% if config.rss_link|default(true) %}
+        <aside>
+            <a href="rss.xml">RSS 2.0 Feed</a>
+        </aside>
+{% endif %}
     </header>
 {% endblock %}
 
