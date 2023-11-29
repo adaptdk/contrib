@@ -66,6 +66,9 @@ class RssCommand extends GenerateCommandBase {
             }
             return ($item1['start'] < $item2['start']) ? 1 : -1;
         });
+        if (!empty($variables['organization']['url'])) {
+            $variables['organization']['domain'] = parse_url($variables['organization']['url'], PHP_URL_HOST);
+        }
         return $variables;
     }
 
