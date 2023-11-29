@@ -45,3 +45,6 @@ contributions:
             - 'https://gitlab.com/drupalspoons/migrate_plus/-/merge_requests/15'
 config:
     language: en
+    html:
+        rss_link: true
+        url: 'https://example.org/contributions.html'

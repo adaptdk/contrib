@@ -39,3 +39,6 @@ jobs:
       -
         name: HTML generation runs
         run: ./contriblog html examples/contributions.yml
+      -
+        name: RSS generation runs
+        run: ./contriblog RSS examples/contributions.yml
