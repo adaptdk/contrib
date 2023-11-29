@@ -4,9 +4,11 @@ This project tries to gather information about
 [open source](https://opensource.org/osd) contributions for a given
 organization.
 
-## Producing an HTML file
+## Producing output files
 
 First, make sure you installed dependencies, e.g. `composer install`.
+
+### HTML
 
 There is some scripting in place to generate an `HTML` page based on the data.
 It also contains `JSON-LD` output that may be useful if the page is public at
@@ -15,6 +17,14 @@ some point.
 You may want to try the following command.
 
     ./contriblog html > contributions.html
+
+### RSS
+
+There is also a way to produce RSS output.
+
+You may want to try the following command.
+
+    ./contriblog rss > rss.xml
 
 ## Adding entries
 
