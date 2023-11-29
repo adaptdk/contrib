@@ -43,3 +43,5 @@ contributions:
         links:
             - 'https://gitlab.com/drupalspoons/migrate_plus/-/issues/249'
             - 'https://gitlab.com/drupalspoons/migrate_plus/-/merge_requests/15'
+config:
+    language: en

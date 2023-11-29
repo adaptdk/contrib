@@ -284,6 +284,7 @@ class AddCommand extends Command {
             'people' => [],
             'projects' => [],
             'contributions' => [],
+            'config' => [],
         ];
     }
 
