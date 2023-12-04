@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * HTML generation command.
+ * RSS generation command.
  */
 #[AsCommand(name: 'rss', description: 'Generates RSS output')]
 class RssCommand extends GenerateCommandBase {
