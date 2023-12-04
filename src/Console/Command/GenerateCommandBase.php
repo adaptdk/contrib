@@ -13,13 +13,6 @@ abstract class GenerateCommandBase extends Command {
     use YamlTrait;
 
     /**
-     * Parsed YAML structure.
-     *
-     * @var array
-     */
-    protected $contributions;
-
-    /**
      * Helper to get a value from contributions nested array dynamically.
      *
      * @param string $address
