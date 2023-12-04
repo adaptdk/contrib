@@ -48,3 +48,5 @@ config:
     html:
         rss_link: true
         url: 'https://example.org/contributions.html'
+    rss:
+        url: 'https://example.org/rss.xml'
