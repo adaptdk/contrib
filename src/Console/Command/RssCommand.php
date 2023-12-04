@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * RSS generation command.
  */
 #[AsCommand(name: 'rss', description: 'Generates RSS output')]
-class RssCommand extends GenerateCommandBase {
+class RssCommand extends FeedCommandBase {
 
     /**
      * {@inheritdoc}
@@ -50,26 +50,14 @@ class RssCommand extends GenerateCommandBase {
         $this->fillContributions($yml_file);
         $this->filterByTags($input->getOption('tag'));
         $this->filterByTypes($input->getOption('type'));
-        $this->twigRender($output, 'contributions.rss.twig', $this->prepareVariables());
+        $this->generateFeed($output);
         return Command::SUCCESS;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function prepareVariables() {
-        $variables = parent::prepareVariables();
-        // Sort contributions by start date in descending order.
-        usort($variables['contributions'], function($item1, $item2) {
-            if ($item1['start'] == $item2['start']) {
-                return 0;
-            }
-            return ($item1['start'] < $item2['start']) ? 1 : -1;
-        });
-        if (!empty($variables['organization']['url'])) {
-            $variables['organization']['domain'] = parse_url($variables['organization']['url'], PHP_URL_HOST);
-        }
-        return $variables;
+    protected function generateFeed(OutputInterface $output): void {
+        $this->twigRender($output, 'contributions.rss.twig', $this->prepareVariables());
     }
-
 }
