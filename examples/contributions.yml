@@ -4,7 +4,7 @@ organization:
     about: |
         A description about the organization here.
     introduction: |
-        And introduction text that is intented to appear at the top of the HTML output.
+        An introduction text that is intented to appear at the top of the HTML output.
 people:
     jane: 'Jane Example'
     joe: 'Joe Examples'
