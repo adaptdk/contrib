@@ -21,11 +21,11 @@
             <p>By <em>{{ people[contribution.who] }}</em> for <a href="{{ projects[contribution.project].url }}">{{ projects[contribution.project].name }}</a>.
             <p>{{ contribution.description }}</p>
 {% if contribution.links %}
-            <p><ul>
+            <ul>
 {% for i, link in contribution.links %}
                 <li><a href="{{ link }}">{{ link }}</a>
 {% endfor %}
-            </ul></p>
+            </ul>
 {% endif %}
         </article>
         ]]></description>
