@@ -3,6 +3,7 @@
 namespace ContribLog\Console\Command;
 
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\TextPrompt;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -71,7 +72,7 @@ class AddCommand extends Command {
                 return Command::FAILURE;
             }
             $this->generateMinimalYaml();
-            $this->getOrganization($input, $output);
+            $this->getOrganization();
         }
         $project = $this->getProject($input, $output);
         $contribution = $this->getContribution($project, $input, $output);
@@ -83,22 +84,18 @@ class AddCommand extends Command {
     /**
      * Helper to get organization.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return array
      *   A map with two keys, name and url, for the organization.
      */
-    protected function getOrganization(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $question = new Question('[1/2] What is the name of the organization? ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $name = $helper->ask($input, $output, $question);
-        $question = new Question('What is main URL for the organization? ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $url = $helper->ask($input, $output, $question);
+    protected function getOrganization() {
+        $not_empty = fn(string $value) => match (true) {
+            self::isNotEmpty($value) => 'Empty value',
+            default => null,
+        };
+        $question = new TextPrompt('[1/2] What is the name of the organization?', 'Acme Inc', '', true, $not_empty);
+        $name = $question->prompt();
+        $question = new TextPrompt('[2/2] What is main URL for the organization?', 'https://example.org', '', true, $not_empty);
+        $url = $question->prompt();
         $this->contributions['organization'] = [
             'name' => $name,
             'url' => $url,
