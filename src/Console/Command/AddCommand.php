@@ -88,10 +88,7 @@ class AddCommand extends Command {
      *   A map with two keys, name and url, for the organization.
      */
     protected function getOrganization() {
-        $not_empty = fn(string $value) => match (true) {
-            self::isNotEmpty($value) => 'Empty value',
-            default => null,
-        };
+        $not_empty = self::getNotEmptyClosure();
         $question = new TextPrompt('[1/2] What is the name of the organization?', 'Acme Inc', '', true, $not_empty);
         $name = $question->prompt();
         $question = new TextPrompt('[2/2] What is main URL for the organization?', 'https://example.org', '', true, $not_empty);
@@ -285,4 +282,13 @@ class AddCommand extends Command {
         ];
     }
 
+    /**
+     * Helper to get not empty validation closure.
+     */
+    private static function getNotEmptyClosure(): \Closure {
+        return fn(string $value) => match (true) {
+            self::isNotEmpty($value) => 'Empty value',
+            default => null,
+        };
+    }
 }
