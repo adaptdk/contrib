@@ -2,13 +2,13 @@
 
 namespace ContribLog\Console\Command;
 
+use Laravel\Prompts\ConfirmPrompt;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -63,9 +63,9 @@ class AddCommand extends Command {
         }
         catch (\InvalidArgumentException $exception) {
             // File does not exist yet.
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion(sprintf('The "%s" file does not exist yet. Do you want to generate initialize it? (y/n) ', $yml_file), false);
-            if (!$helper->ask($input, $output, $question)) {
+            $question = new ConfirmPrompt(sprintf('The "%s" file does not exist yet. Do you want to generate it? (y/n) ', $yml_file), false);
+            $create_file = $question->prompt();
+            if (!$create_file) {
                 // Nothing else to do, cannot continue, hence fail.
                 $output->writeln('<error>A contributions YAML file is needed to continue. See an examples directory or accept to generate it while runnind add command.</error>');
                 return Command::FAILURE;
