@@ -19,6 +19,7 @@
     "require": {
         "symfony/console": "6.3.*",
         "symfony/yaml": "6.3.*",
-        "twig/twig": "3.8.*"
+        "twig/twig": "3.8.*",
+        "laravel/prompts": "0.1.*"
     }
 }
