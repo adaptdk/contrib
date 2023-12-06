@@ -20,6 +20,12 @@
         "symfony/console": "6.3.*",
         "symfony/yaml": "6.3.*",
         "twig/twig": "3.8.*",
-        "laravel/prompts": "0.1.*"
+        "laravel/prompts": "0.1.*",
+        "cweagans/composer-patches": "^1.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
     }
 }
