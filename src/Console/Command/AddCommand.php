@@ -2,8 +2,6 @@
 
 namespace ContribLog\Console\Command;
 
-use Laravel\Prompts\ConfirmPrompt;
-use Laravel\Prompts\TextPrompt;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,6 +9,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\text;
 
 /**
  * Add command.
@@ -64,11 +64,15 @@ class AddCommand extends Command {
         }
         catch (\InvalidArgumentException $exception) {
             // File does not exist yet.
-            $question = new ConfirmPrompt(sprintf('The "%s" file does not exist yet. Do you want to generate it? (y/n) ', $yml_file), false);
-            $create_file = $question->prompt();
+            $create_file = confirm(
+                label: sprintf('The "%s" file does not exist yet. Do you want to generate it? (y/n) ', $yml_file),
+                default: false,
+                hint: 'A contributions file is needed to continue.'
+            );
             if (!$create_file) {
                 // Nothing else to do, cannot continue, hence fail.
-                $output->writeln('<error>A contributions YAML file is needed to continue. See an examples directory or accept to generate it while runnind add command.</error>');
+                $output->writeln('<error>A contributions YAML file is needed to continue.</error>');
+                $output->writeln('<error>See an examples directory or accept to generate it while running the add command.</error>');
                 return Command::FAILURE;
             }
             $this->generateMinimalYaml();
@@ -89,10 +93,18 @@ class AddCommand extends Command {
      */
     protected function getOrganization() {
         $not_empty = self::getNotEmptyClosure();
-        $question = new TextPrompt('[1/2] What is the name of the organization?', 'Acme Inc', '', true, $not_empty);
-        $name = $question->prompt();
-        $question = new TextPrompt('[2/2] What is main URL for the organization?', 'https://example.org', '', true, $not_empty);
-        $url = $question->prompt();
+        $name = text(
+            label: '[1/2] What is the name of the organization?',
+            placeholder: 'Acme Inc',
+            required: true,
+            validate: $not_empty
+        );
+        $url = text(
+            label: '[2/2] What is main URL for the organization?',
+            placeholder: 'https://example.org',
+            required: true,
+            validate: $not_empty
+        );
         $this->contributions['organization'] = [
             'name' => $name,
             'url' => $url,
