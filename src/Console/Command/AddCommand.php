@@ -90,6 +90,7 @@ class AddCommand extends Command {
         }
         $project = $this->getProject();
         $contribution = $this->getContribution($project, $input, $output);
+        $contribution = $this->getContribution($project);
         $this->contributions['contributions'][] = $contribution;
         $this->writeYaml($yml_file, $output);
         return Command::SUCCESS;
@@ -190,46 +191,51 @@ class AddCommand extends Command {
      *
      * @param string $project
      *   The project to use, e.g. drupal/migrate_plus.
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
      *
      * @return array
      *   The contribution data.
      */
-    protected function getContribution(string $project, InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
+    protected function getContribution(string $project) {
         $contribution = ['project' => $project];
-        $question = new Question('[2/7] Please give the contribution a title: ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $contribution['title'] = $helper->ask($input, $output, $question);
-        $question = new ChoiceQuestion(
-            '[3/7] What was the main type of the contribution? [default: code]',
-            $this->getContributionTypes(),
-            'code'
+        $not_empty = self::getNotEmptyClosure();
+        $contribution['title'] = text(
+            label: '[2/7] Title',
+            hint: 'Please give the contribution a title.',
+            required: true,
+            validate: $not_empty
         );
-        $question->setErrorMessage('Type %s is invalid.');
-        $contribution['type'] = $helper->ask($input, $output, $question);
-        $contribution['who'] = $this->getPerson($input, $output);
+        $contribution['type'] = select(
+            label: '[2/7] Type',
+            hint: 'What was the main type of the contribution?',
+            options: $this->getContributionTypes(),
+            default: 'code',
+            required: true,
+        );
+        $contribution['who'] = $this->getPerson();
         $today = date('Y-m-d');
-        $question = new Question("[5/7] When was the contribution first published? (E.g. 2020-01-22) [default: $today]: ", $today);
-        $question->setValidator(function ($value) {
-            if (empty($value) || strtotime($value) === FALSE) {
-                throw new \RuntimeException('Invalid date. Please provide a time string like 2020-01-22.');
-            }
-            return new \Datetime('@' . strtotime($value), new \DateTimeZone('UTC'));
-        });
-        $contribution['start'] = $helper->ask($input, $output, $question);
-        $question = new Question("[6/7] How would you describe the contribution? (multiline)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-        $question->setMultiline(true);
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $contribution['description'] = $helper->ask($input, $output, $question);
-        $question = new Question("[7/7] Please provide public links related to the contribution? (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-        $question->setMultiline(true);
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $question->setNormalizer([self::class, 'cleanEmpty']);
-        $contribution['links'] = $helper->ask($input, $output, $question);
+        $start = text(
+            label: '[5/7] Date',
+            hint: 'When was the contribution first published?',
+            default: $today,
+            required: true,
+            validate: function ($value) {
+                if (empty($value) || strtotime($value) === FALSE) {
+                    return 'Invalid date. Please provide a time string like 2020-01-22.';
+                }
+            },
+        );
+        $contribution['start'] = new \Datetime('@' . strtotime($start), new \DateTimeZone('UTC'));
+        $contribution['description'] = textarea(
+           label: '[6/7] Description',
+           hint: 'How would you describe the contribution?',
+           validate: $not_empty,
+        );
+        $links = textarea(
+           label: '[7/7] Links',
+           hint: 'Please provide public links related to the contribution? (one per line)',
+           validate: $not_empty,
+        );
+        $contribution['links'] = self::cleanEmpty($links);
         return $contribution;
     }
 
