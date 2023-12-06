@@ -27,5 +27,12 @@
         "allow-plugins": {
             "cweagans/composer-patches": true
         }
+    },
+    "extra": {
+        "patches": {
+            "laravel/prompts": {
+                "Add textarea, a multiline text input": "./patches/laravel-prompts/88.diff"
+            }
+        }
     }
 }
