@@ -10,7 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\textarea;
 
 /**
  * Add command.
@@ -115,44 +117,56 @@ class AddCommand extends Command {
     /**
      * Helper to get related project.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return string
      *   The project to use, e.g. drupal/migrate_plus.
      */
-    protected function getProject(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $projects = [self::UNDEFINED_PROJECT_KEY => self::UNDEFINED_PROJECT];
+    protected function getProject() {
+        $projects = [self::UNDEFINED_PROJECT_KEY => sprintf('%s (%s)', self::UNDEFINED_PROJECT, self::UNDEFINED_PROJECT_KEY)];
         ksort($this->contributions['projects']);
         foreach ($this->contributions['projects'] as $project_key => $project) {
-            $projects[$project_key] = $project['name'];
+            $projects[$project_key] = sprintf('%s (%s)', $project['name'], $project_key);
         }
-        $question = new ChoiceQuestion(
-            '[1/7] Which project received the contribution?',
-            $projects,
-            0
+        $project_search_item = suggest(
+            label: '[1/7] Which project received the contribution?',
+            options: fn (string $value) => match (true) {
+                empty($value) => $projects,
+                default => array_filter($projects, function ($v, $k) use ($value) {
+                    return str_contains($v, $value);
+                }, ARRAY_FILTER_USE_BOTH),
+            },
+            validate: fn (string $value) => match (true) {
+                in_array($value, $projects) => null,
+                default => sprintf('Project "%s" is invalid.', $value),
+            }
         );
-        $question->setErrorMessage('Project %s is invalid.');
-        $project = $helper->ask($input, $output, $question);
+        $project = array_search($project_search_item, $projects);
         if ($project == self::UNDEFINED_PROJECT_KEY) {
-            $question = new Question('What is the machine name of the project? (E.g. drupal/migrate_plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $machine_name = $helper->ask($input, $output, $question);
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $question = new Question('What is the name of the project? (E.g. Migrate Plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $name = $helper->ask($input, $output, $question);
-            $question = new Question('What is the main URL of the project? (E.g. https://www.drupal.org/project/migrate_plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $url = $helper->ask($input, $output, $question);
-            $question = new Question("Please provide tags for the project, e.g. drupal (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-            $question->setMultiline(true);
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $question->setNormalizer([self::class, 'cleanEmpty']);
-            $tags = $helper->ask($input, $output, $question);
+            $not_empty = self::getNotEmptyClosure();
+            $machine_name = text(
+                label: 'What is the machine name of the project?',
+                placeholder: 'drupal/migrate_plus',
+                required: true,
+                validate: $not_empty
+            );
+            $name = text(
+                label: 'What is the name of the project?',
+                placeholder: 'Migrate Plus',
+                required: true,
+                validate: $not_empty
+            );
+            $url = text(
+                label: 'What is the main URL of the project?',
+                placeholder: 'https://www.drupal.org/project/migrate_plus',
+                required: true,
+                validate: $not_empty
+            );
+            $tags = textarea(
+                label: 'Please provide tags for the project',
+                placeholder: 'drupal',
+                hint: 'One tag per line',
+                validate: $not_empty
+            );
+            $tags = self::cleanEmpty($tags);
             $this->contributions['projects'][$machine_name] = [
                 'name' => $name,
                 'url' => $url,
@@ -279,9 +293,9 @@ class AddCommand extends Command {
      */
     public static function cleanEmpty($value) {
         $lines = explode(PHP_EOL, $value);
-        array_walk($lines, 'trim');
+        array_walk($lines, fn(&$line) => $line = trim($line));
         $lines = array_filter($lines);
-        return $lines;
+        return array_values($lines);
     }
 
     protected function generateMinimalYaml() {
