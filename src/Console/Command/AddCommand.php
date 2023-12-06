@@ -8,8 +8,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\suggest;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\textarea;
 
 /**
  * Add command.
@@ -25,6 +29,13 @@ class AddCommand extends Command {
      * @var string
      */
     const UNDEFINED_PERSON= 'New person';
+
+    /**
+     * Key for undefined person.
+     *
+     * @var string
+     */
+    const UNDEFINED_PERSON_KEY = 0;
 
     /**
      * Label for undefined project.
@@ -63,18 +74,23 @@ class AddCommand extends Command {
         }
         catch (\InvalidArgumentException $exception) {
             // File does not exist yet.
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion(sprintf('The "%s" file does not exist yet. Do you want to generate initialize it? (y/n) ', $yml_file), false);
-            if (!$helper->ask($input, $output, $question)) {
+            $create_file = confirm(
+                label: sprintf('The "%s" file does not exist yet. Do you want to generate it? (y/n) ', $yml_file),
+                default: false,
+                hint: 'A contributions file is needed to continue.'
+            );
+            if (!$create_file) {
                 // Nothing else to do, cannot continue, hence fail.
-                $output->writeln('<error>A contributions YAML file is needed to continue. See an examples directory or accept to generate it while runnind add command.</error>');
+                $output->writeln('<error>A contributions YAML file is needed to continue.</error>');
+                $output->writeln('<error>See an examples directory or accept to generate it while running the add command.</error>');
                 return Command::FAILURE;
             }
             $this->generateMinimalYaml();
-            $this->getOrganization($input, $output);
+            $this->getOrganization();
         }
-        $project = $this->getProject($input, $output);
+        $project = $this->getProject();
         $contribution = $this->getContribution($project, $input, $output);
+        $contribution = $this->getContribution($project);
         $this->contributions['contributions'][] = $contribution;
         $this->writeYaml($yml_file, $output);
         return Command::SUCCESS;
@@ -83,22 +99,23 @@ class AddCommand extends Command {
     /**
      * Helper to get organization.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return array
      *   A map with two keys, name and url, for the organization.
      */
-    protected function getOrganization(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $question = new Question('[1/2] What is the name of the organization? ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $name = $helper->ask($input, $output, $question);
-        $question = new Question('What is main URL for the organization? ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $url = $helper->ask($input, $output, $question);
+    protected function getOrganization() {
+        $not_empty = self::getNotEmptyClosure();
+        $name = text(
+            label: '[1/2] What is the name of the organization?',
+            placeholder: 'Acme Inc',
+            required: true,
+            validate: $not_empty
+        );
+        $url = text(
+            label: '[2/2] What is main URL for the organization?',
+            placeholder: 'https://example.org',
+            required: true,
+            validate: $not_empty
+        );
         $this->contributions['organization'] = [
             'name' => $name,
             'url' => $url,
@@ -109,44 +126,56 @@ class AddCommand extends Command {
     /**
      * Helper to get related project.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return string
      *   The project to use, e.g. drupal/migrate_plus.
      */
-    protected function getProject(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $projects = [self::UNDEFINED_PROJECT_KEY => self::UNDEFINED_PROJECT];
+    protected function getProject() {
+        $projects = [self::UNDEFINED_PROJECT_KEY => sprintf('%s (%s)', self::UNDEFINED_PROJECT, self::UNDEFINED_PROJECT_KEY)];
         ksort($this->contributions['projects']);
         foreach ($this->contributions['projects'] as $project_key => $project) {
-            $projects[$project_key] = $project['name'];
+            $projects[$project_key] = sprintf('%s (%s)', $project['name'], $project_key);
         }
-        $question = new ChoiceQuestion(
-            '[1/7] Which project received the contribution?',
-            $projects,
-            0
+        $project_search_item = suggest(
+            label: '[1/7] Which project received the contribution?',
+            options: fn (string $value) => match (true) {
+                empty($value) => $projects,
+                default => array_filter($projects, function ($v, $k) use ($value) {
+                    return str_contains($v, $value);
+                }, ARRAY_FILTER_USE_BOTH),
+            },
+            validate: fn (string $value) => match (true) {
+                in_array($value, $projects) => null,
+                default => sprintf('Project "%s" is invalid.', $value),
+            }
         );
-        $question->setErrorMessage('Project %s is invalid.');
-        $project = $helper->ask($input, $output, $question);
+        $project = array_search($project_search_item, $projects);
         if ($project == self::UNDEFINED_PROJECT_KEY) {
-            $question = new Question('What is the machine name of the project? (E.g. drupal/migrate_plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $machine_name = $helper->ask($input, $output, $question);
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $question = new Question('What is the name of the project? (E.g. Migrate Plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $name = $helper->ask($input, $output, $question);
-            $question = new Question('What is the main URL of the project? (E.g. https://www.drupal.org/project/migrate_plus): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $url = $helper->ask($input, $output, $question);
-            $question = new Question("Please provide tags for the project, e.g. drupal (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-            $question->setMultiline(true);
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $question->setNormalizer([self::class, 'cleanEmpty']);
-            $tags = $helper->ask($input, $output, $question);
+            $not_empty = self::getNotEmptyClosure();
+            $machine_name = text(
+                label: 'What is the machine name of the project?',
+                placeholder: 'drupal/migrate_plus',
+                required: true,
+                validate: $not_empty
+            );
+            $name = text(
+                label: 'What is the name of the project?',
+                placeholder: 'Migrate Plus',
+                required: true,
+                validate: $not_empty
+            );
+            $url = text(
+                label: 'What is the main URL of the project?',
+                placeholder: 'https://www.drupal.org/project/migrate_plus',
+                required: true,
+                validate: $not_empty
+            );
+            $tags = textarea(
+                label: 'Please provide tags for the project',
+                placeholder: 'drupal',
+                hint: 'One tag per line',
+                validate: $not_empty
+            );
+            $tags = self::cleanEmpty($tags);
             $this->contributions['projects'][$machine_name] = [
                 'name' => $name,
                 'url' => $url,
@@ -162,78 +191,87 @@ class AddCommand extends Command {
      *
      * @param string $project
      *   The project to use, e.g. drupal/migrate_plus.
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
      *
      * @return array
      *   The contribution data.
      */
-    protected function getContribution(string $project, InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
+    protected function getContribution(string $project) {
         $contribution = ['project' => $project];
-        $question = new Question('[2/7] Please give the contribution a title: ');
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $contribution['title'] = $helper->ask($input, $output, $question);
-        $question = new ChoiceQuestion(
-            '[3/7] What was the main type of the contribution? [default: code]',
-            $this->getContributionTypes(),
-            'code'
+        $not_empty = self::getNotEmptyClosure();
+        $contribution['title'] = text(
+            label: '[2/7] Title',
+            hint: 'Please give the contribution a title.',
+            required: true,
+            validate: $not_empty
         );
-        $question->setErrorMessage('Type %s is invalid.');
-        $contribution['type'] = $helper->ask($input, $output, $question);
-        $contribution['who'] = $this->getPerson($input, $output);
+        $contribution['type'] = select(
+            label: '[2/7] Type',
+            hint: 'What was the main type of the contribution?',
+            options: $this->getContributionTypes(),
+            default: 'code',
+            required: true,
+        );
+        $contribution['who'] = $this->getPerson();
         $today = date('Y-m-d');
-        $question = new Question("[5/7] When was the contribution first published? (E.g. 2020-01-22) [default: $today]: ", $today);
-        $question->setValidator(function ($value) {
-            if (empty($value) || strtotime($value) === FALSE) {
-                throw new \RuntimeException('Invalid date. Please provide a time string like 2020-01-22.');
-            }
-            return new \Datetime('@' . strtotime($value), new \DateTimeZone('UTC'));
-        });
-        $contribution['start'] = $helper->ask($input, $output, $question);
-        $question = new Question("[6/7] How would you describe the contribution? (multiline)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-        $question->setMultiline(true);
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $contribution['description'] = $helper->ask($input, $output, $question);
-        $question = new Question("[7/7] Please provide public links related to the contribution? (one per line)\nUse EOL to finish, e.g. Ctrl+D on an empty line to finish input\n");
-        $question->setMultiline(true);
-        $question->setValidator([self::class, 'isNotEmpty']);
-        $question->setNormalizer([self::class, 'cleanEmpty']);
-        $contribution['links'] = $helper->ask($input, $output, $question);
+        $start = text(
+            label: '[5/7] Date',
+            hint: 'When was the contribution first published?',
+            default: $today,
+            required: true,
+            validate: function ($value) {
+                if (empty($value) || strtotime($value) === FALSE) {
+                    return 'Invalid date. Please provide a time string like 2020-01-22.';
+                }
+            },
+        );
+        $contribution['start'] = new \Datetime('@' . strtotime($start), new \DateTimeZone('UTC'));
+        $contribution['description'] = textarea(
+           label: '[6/7] Description',
+           hint: 'How would you describe the contribution?',
+           validate: $not_empty,
+        );
+        $links = textarea(
+           label: '[7/7] Links',
+           hint: 'Please provide public links related to the contribution? (one per line)',
+           validate: $not_empty,
+        );
+        $contribution['links'] = self::cleanEmpty($links);
         return $contribution;
     }
 
     /**
      * Helper to get related contributor.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return string
-     *   The project to use, e.g. drupal/migrate_plus.
+     *   The person identifier, e.g. jsaramago.
      */
-    protected function getPerson(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $people = array_keys($this->contributions['people']);
-        array_unshift($people, self::UNDEFINED_PERSON);
-        $question = new ChoiceQuestion(
-            '[4/7] Who is making the the contribution?',
-            $people,
-            0
+    protected function getPerson() {
+        $people = $this->contributions['people'];
+        array_walk($people, fn(&$label, $key) => $label = sprintf('%s (%s)', $label, $key));
+        $people = [self::UNDEFINED_PERSON_KEY => self::UNDEFINED_PERSON] + $people;
+        $person = select(
+            label: '[4/7] Person',
+            hint: 'Who is making the the contribution?',
+            options: $people,
+            default: self:: UNDEFINED_PERSON_KEY,
+            required: true,
         );
-        $question->setErrorMessage('Person %s is invalid.');
-        $person = $helper->ask($input, $output, $question);
-        if ($person == self::UNDEFINED_PERSON) {
-            $question = new Question('What is the name of the person? (E.g. José Saramago): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $name = $helper->ask($input, $output, $question);
-            $question = new Question('What is the identifier for the person? (E.g. Jose): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $machine_name = $helper->ask($input, $output, $question);
+        if ($person == self::UNDEFINED_PERSON_KEY) {
+            $not_empty = self::getNotEmptyClosure();
+            $name = text(
+                label: 'Name',
+                placeholder: 'José Saramago',
+                hint: 'What is the name of the person?',
+                required: true,
+                validate: $not_empty
+            );
+            $machine_name = text(
+                label: 'Identifier',
+                placeholder: 'jsaramago',
+                hint: 'What is the identifier for the person?',
+                required: true,
+                validate: $not_empty
+            );
             $this->contributions['people'][$machine_name] = $name;
             $person = $machine_name;
         }
@@ -273,9 +311,9 @@ class AddCommand extends Command {
      */
     public static function cleanEmpty($value) {
         $lines = explode(PHP_EOL, $value);
-        array_walk($lines, 'trim');
+        array_walk($lines, fn(&$line) => $line = trim($line));
         $lines = array_filter($lines);
-        return $lines;
+        return array_values($lines);
     }
 
     protected function generateMinimalYaml() {
@@ -288,4 +326,13 @@ class AddCommand extends Command {
         ];
     }
 
+    /**
+     * Helper to get not empty validation closure.
+     */
+    private static function getNotEmptyClosure(): \Closure {
+        return fn(string $value) => match (true) {
+            self::isNotEmpty($value) => 'Empty value',
+            default => null,
+        };
+    }
 }
