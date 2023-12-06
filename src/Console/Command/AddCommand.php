@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
@@ -28,6 +29,13 @@ class AddCommand extends Command {
      * @var string
      */
     const UNDEFINED_PERSON= 'New person';
+
+    /**
+     * Key for undefined person.
+     *
+     * @var string
+     */
+    const UNDEFINED_PERSON_KEY = 0;
 
     /**
      * Label for undefined project.
@@ -80,7 +88,7 @@ class AddCommand extends Command {
             $this->generateMinimalYaml();
             $this->getOrganization();
         }
-        $project = $this->getProject($input, $output);
+        $project = $this->getProject();
         $contribution = $this->getContribution($project, $input, $output);
         $this->contributions['contributions'][] = $contribution;
         $this->writeYaml($yml_file, $output);
@@ -228,32 +236,36 @@ class AddCommand extends Command {
     /**
      * Helper to get related contributor.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *   Input object.
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *   Output object.
-     *
      * @return string
-     *   The project to use, e.g. drupal/migrate_plus.
+     *   The person identifier, e.g. jsaramago.
      */
-    protected function getPerson(InputInterface $input, OutputInterface $output) {
-        $helper = $this->getHelper('question');
-        $people = array_keys($this->contributions['people']);
-        array_unshift($people, self::UNDEFINED_PERSON);
-        $question = new ChoiceQuestion(
-            '[4/7] Who is making the the contribution?',
-            $people,
-            0
+    protected function getPerson() {
+        $people = $this->contributions['people'];
+        array_walk($people, fn(&$label, $key) => $label = sprintf('%s (%s)', $label, $key));
+        $people = [self::UNDEFINED_PERSON_KEY => self::UNDEFINED_PERSON] + $people;
+        $person = select(
+            label: '[4/7] Person',
+            hint: 'Who is making the the contribution?',
+            options: $people,
+            default: self:: UNDEFINED_PERSON_KEY,
+            required: true,
         );
-        $question->setErrorMessage('Person %s is invalid.');
-        $person = $helper->ask($input, $output, $question);
-        if ($person == self::UNDEFINED_PERSON) {
-            $question = new Question('What is the name of the person? (E.g. José Saramago): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $name = $helper->ask($input, $output, $question);
-            $question = new Question('What is the identifier for the person? (E.g. Jose): ');
-            $question->setValidator([self::class, 'isNotEmpty']);
-            $machine_name = $helper->ask($input, $output, $question);
+        if ($person == self::UNDEFINED_PERSON_KEY) {
+            $not_empty = self::getNotEmptyClosure();
+            $name = text(
+                label: 'Name',
+                placeholder: 'José Saramago',
+                hint: 'What is the name of the person?',
+                required: true,
+                validate: $not_empty
+            );
+            $machine_name = text(
+                label: 'Identifier',
+                placeholder: 'jsaramago',
+                hint: 'What is the identifier for the person?',
+                required: true,
+                validate: $not_empty
+            );
             $this->contributions['people'][$machine_name] = $name;
             $person = $machine_name;
         }
