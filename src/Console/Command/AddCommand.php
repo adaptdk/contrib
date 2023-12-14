@@ -89,7 +89,6 @@ class AddCommand extends Command {
             $this->getOrganization();
         }
         $project = $this->getProject();
-        $contribution = $this->getContribution($project, $input, $output);
         $contribution = $this->getContribution($project);
         $this->contributions['contributions'][] = $contribution;
         $this->writeYaml($yml_file, $output);
