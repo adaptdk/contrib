@@ -38,7 +38,7 @@ The YAML file tries to be self-explanatory.
 It tries to describe contributions thinking in possible future use of the data.
 
 Types are [CHAOSS Types of
-Contributions](https://github.com/chaoss/wg-common/blob/master/focus-areas/what/types-of-contributions.md).
+Contributions](https://github.com/chaoss/wg-common/blob/master/focus-areas/contributions/types-of-contributions.md).
 
 Contributions are sorted by date.
 
